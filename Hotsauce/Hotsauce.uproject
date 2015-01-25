@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{BFA792FF-40EF-3B72-16AD-3EBE6C8B4E4F}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Hotsauce",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
