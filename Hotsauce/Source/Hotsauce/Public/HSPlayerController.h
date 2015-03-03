@@ -1,7 +1,6 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/PlayerController.h"
-//#include "GameFramework/AIController.h"
 #include "HSPlayerCharacter.h"
 #include "HSPlayerController.generated.h"
 
@@ -10,34 +9,44 @@ class AHSPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-    virtual void BeginPlay() override;
-
 public:
+
     AHSPlayerController(const FObjectInitializer& ObjectInitializer);
 
-    float PanSpeed;
-    bool IsZoomedIn;
-    
-protected:
-	uint32 bMoveToMouseCursor : 1;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mouse)
+    FVector MouseHitLocation;
 
-	virtual void PlayerTick(float DeltaTime) override;
+    UFUNCTION(BlueprintImplementableEvent, Category = "Events")
+    void OnPrimaryEvent();
+    
+    UFUNCTION(BlueprintImplementableEvent, Category = "Events")
+    void OnSecondaryEvent();
+
+protected:
+    float PrimaryCycleTime;
+    float PrimaryDurationTime;
+    float SecondaryCycleTime;
+    float SecondaryDurationTime;
+    bool IsPrimaryActive;
+    bool IsSecondaryActive;
+	
+    virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 
-	/** Navigate player to the current mouse cursor location. */
-	void MoveToMouseCursor();
+    void OnPrimaryPressed();
+    void OnPrimaryReleased();
+    
+
+    void OnSecondaryPressed();
+    void OnSecondaryReleased();
+    
+
+    void HorizontalMovementRate(float Rate);
+    void VerticalMovementRate(float Rate);
 
     UFUNCTION(Reliable, Server, WithValidation)
-    void SetDestination(const FVector aDestination);
-    
-	/** Input handlers for SetDestination action. */
-    void OnSetDestinationPressed();
-	void OnSetDestinationReleased();
+    void Primary();
 
-    void MoveCameraHorizontalRate(float Rate);
-    void MoveCameraVerticalRate(float Rate);
-    void ResetCamera();
-    void ToggleZoom();
 };
 
 

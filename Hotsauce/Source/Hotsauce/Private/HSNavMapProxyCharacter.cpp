@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Hotsauce.h"
-#include "HSProxyCharacter.h"
+#include "HSNavMapProxyCharacter.h"
 #include "AIController.h"
 #include "UnrealNetwork.h"
 
 
-AHSProxyCharacter::AHSProxyCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+AHSNavMapProxyCharacter::AHSNavMapProxyCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
     CameraMaxHeight = 3000;
     CameraMinHeight = 1000;
@@ -61,7 +61,7 @@ AHSProxyCharacter::AHSProxyCharacter(const FObjectInitializer& ObjectInitializer
     }
 }
 
-void AHSProxyCharacter::BeginPlay()
+void AHSNavMapProxyCharacter::BeginPlay()
 {
     Super::BeginPlay();
     UWorld* const World = GetWorld();
@@ -77,7 +77,7 @@ void AHSProxyCharacter::BeginPlay()
         SpawnParams.bNoCollisionFail = true;
 
         // Spawn the actual player character at the same location as the Proxy
-        Character = World->SpawnActor<AHSPlayerCharacter>(CharacterClass, Location, Rotation, SpawnParams);
+        Character = World->SpawnActor<AHSCharacter>(CharacterClass, Location, Rotation, SpawnParams);
 
         // We use the PlayerAI to control the Player Character for Navigation
         PlayerAI = World->SpawnActor<AAIController>(Location, Rotation);
@@ -85,7 +85,7 @@ void AHSProxyCharacter::BeginPlay()
     }
 }
 
-void AHSProxyCharacter::Tick(float DeltaTime)
+void AHSNavMapProxyCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     if (Character)
@@ -107,19 +107,19 @@ void AHSProxyCharacter::Tick(float DeltaTime)
     MoveCameraOffsetRate(DeltaTime);
 }
 
-void AHSProxyCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+void AHSNavMapProxyCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(AHSProxyCharacter, Character);
+    DOREPLIFETIME(AHSNavMapProxyCharacter, Character);
 }
 
-void AHSProxyCharacter::MoveToLocation(const AHSPlayerController* controller, const FVector DestLocation)
+void AHSNavMapProxyCharacter::MoveToLocation(const AHSNavMapPlayerController* controller, const FVector DestLocation)
 {
     PlayerAI->MoveToLocation(DestLocation);
 }
 
-void AHSProxyCharacter::MoveCameraHeightRate(float Rate)
+void AHSNavMapProxyCharacter::MoveCameraHeightRate(float Rate)
 {
     float Mult = 0.02f;
     float DistanceToTarget = CameraTargetHeight - CameraRootBoom->TargetArmLength;
@@ -129,7 +129,7 @@ void AHSProxyCharacter::MoveCameraHeightRate(float Rate)
     }
 }
 
-void AHSProxyCharacter::MoveCameraOffsetRate(float Rate)
+void AHSNavMapProxyCharacter::MoveCameraOffsetRate(float Rate)
 {
     float Mult = 0.02f;
     FVector DifferenceVector = FRotator(60.0f, 0.0f, 0.0f).RotateVector(CameraTargetOffset) - CameraOffsetBoom->GetRelativeTransform().GetLocation();
@@ -140,7 +140,7 @@ void AHSProxyCharacter::MoveCameraOffsetRate(float Rate)
     }
 }
 
-void AHSProxyCharacter::SetCamreaHeight(float Height)
+void AHSNavMapProxyCharacter::SetCamreaHeight(float Height)
 {
     if (CameraMaxHeight < Height)
     {
@@ -156,7 +156,7 @@ void AHSProxyCharacter::SetCamreaHeight(float Height)
     }
 }
 
-void AHSProxyCharacter::SetCamreaOffset(FVector Offset)
+void AHSNavMapProxyCharacter::SetCamreaOffset(FVector Offset)
 {
     CameraTargetOffset = Offset;
 }

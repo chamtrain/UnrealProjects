@@ -1,15 +1,12 @@
 #pragma once
 #include "GameFramework/Character.h"
-#include "HSPlayerCharacter.h"
-#include "HSPlayerController.h"
+#include "HSCharacter.h"
+#include "HSNavMapPlayerController.h"
 #include "AIController.h"
-#include "HSProxyCharacter.generated.h"
+#include "HSNavMapProxyCharacter.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class HOTSAUCE_API AHSProxyCharacter : public ACharacter
+class HOTSAUCE_API AHSNavMapProxyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 public:	
@@ -18,7 +15,7 @@ public:
     // We spawn the real player character and other such elements here 
     virtual void BeginPlay() override;
 
-    AHSProxyCharacter(const FObjectInitializer& ObjectInitializer);
+    AHSNavMapProxyCharacter(const FObjectInitializer& ObjectInitializer);
 
     /** Top down camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -38,7 +35,7 @@ public:
 
     // Pointer to the actual character. We replicate it so we know its location for the camera on the client 
     UPROPERTY(Replicated)
-    AHSPlayerCharacter* Character;
+    AHSCharacter* Character;
 
     // The AI Controller we will use to auto-navigate the player 
     AAIController* PlayerAI;
@@ -53,7 +50,7 @@ public:
     FVector CameraTargetOffset;
 
     // Used by the controller to get moving to work 
-    void MoveToLocation(const AHSPlayerController* controller, const FVector vector);
+    void MoveToLocation(const AHSNavMapPlayerController* controller, const FVector vector);
 
     void MoveCameraHeightRate(float Rate);
     void MoveCameraOffsetRate(float Rate);

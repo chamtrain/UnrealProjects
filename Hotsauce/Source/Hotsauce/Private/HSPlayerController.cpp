@@ -2,30 +2,51 @@
 
 #include "Hotsauce.h"
 #include "HSPlayerController.h"
-#include "HSProxyCharacter.h"
+#include "HSPlayerCharacter.h"
 #include "AI/Navigation/NavigationSystem.h"
 
 AHSPlayerController::AHSPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Crosshairs;
-    PanSpeed = 5.f;
-    IsZoomedIn = true;
-}
+    
+	//DefaultMouseCursor = EMouseCursor::Crosshairs;
+    PrimaryCycleTime = 0.2f;
+    PrimaryDurationTime = 0.0f;
+    SecondaryCycleTime = 5.0f;
+    SecondaryDurationTime = 0.0f;
+    IsPrimaryActive = false;
+    IsSecondaryActive = false;
 
-void AHSPlayerController::BeginPlay()
-{
+
+    bShowMouseCursor = true;
+    bEnableClickEvents = true;
+    bEnableTouchEvents = true;
+    bEnableMouseOverEvents = true;
+    bEnableTouchOverEvents = true;
+    
+
 }
 
 void AHSPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	// keep updating the destination every tick while desired
-	if (bMoveToMouseCursor)
-	{
-		MoveToMouseCursor();
-	}
+    FHitResult Hit;
+    GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+    if (Hit.bBlockingHit)
+    {
+        MouseHitLocation = Hit.ImpactPoint;
+    }
+    
+    if (IsPrimaryActive)
+    {
+        PrimaryDurationTime += DeltaTime;
+        if (PrimaryDurationTime > PrimaryCycleTime)
+        {
+            Primary();
+            PrimaryDurationTime = 0.0f;
+        }
+    }
 }
 
 void AHSPlayerController::SetupInputComponent()
@@ -33,104 +54,67 @@ void AHSPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-    InputComponent->BindAction("SetDestination", IE_Pressed, this, &AHSPlayerController::OnSetDestinationPressed);
-    InputComponent->BindAction("SetDestination", IE_Released, this, &AHSPlayerController::OnSetDestinationReleased);
-    InputComponent->BindAction("ResetCamera", IE_Pressed, this, &AHSPlayerController::ToggleZoom);
+    // Action Mapping
+    
+    InputComponent->BindAction("Primary", IE_Pressed, this, &AHSPlayerController::OnPrimaryPressed);
+    InputComponent->BindAction("Primary", IE_Released, this, &AHSPlayerController::OnPrimaryReleased);
+    
+    /*
+    InputComponent->BindAction("Secondary", IE_Pressed, this, &AHSPlayerController::OnDefendPressed);
+    InputComponent->BindAction("Secondary", IE_Released, this, &AHSPlayerController::OnDefendReleased);
 
-    InputComponent->BindAxis("CameraHorizontal", this, &AHSPlayerController::MoveCameraHorizontalRate);
-    InputComponent->BindAxis("CameraVertical", this, &AHSPlayerController::MoveCameraVerticalRate);
+    // Axis Mapping
+    InputComponent->BindAxis("HorizontalMovement", this, &AHSPlayerController::HorizontalMovementRate);
+    InputComponent->BindAxis("VerticalMovement", this, &AHSPlayerController::VerticalMovementRate);
+    */
 }
 
-void AHSPlayerController::MoveToMouseCursor()
+void AHSPlayerController::OnPrimaryPressed()
 {
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-	if (Hit.bBlockingHit)
-	{
-        SetDestination(Hit.ImpactPoint);
-	}
-}
-
-void AHSPlayerController::OnSetDestinationPressed()
-{
-	bMoveToMouseCursor = true;
-}
-
-void AHSPlayerController::OnSetDestinationReleased()
-{
-	bMoveToMouseCursor = false;
-}
-
-void AHSPlayerController::MoveCameraHorizontalRate(float Rate)
-{
-    if (abs(Rate) < .5f)
+    IsPrimaryActive = true;
+    OnPrimaryEvent();
+    AHSPlayerCharacter* pc = (AHSPlayerCharacter*)GetCharacter();
+    if (pc)
     {
-        return;
-    }
-    AHSProxyCharacter* const PlayerCharacter = (AHSProxyCharacter*)GetPawn();
-    if (PlayerCharacter)
-    {
-        PlayerCharacter->SetCamreaOffset(PlayerCharacter->CameraTargetOffset + Rate*PanSpeed*FVector(0.0f, 10.0f, 0.0f));
+        pc->EventSelectTarget();
     }
 }
 
-void AHSPlayerController::MoveCameraVerticalRate(float Rate)
+void AHSPlayerController::OnPrimaryReleased()
 {
-    if (abs(Rate) < .5f)
-    {
-        return;
-    }
-    AHSProxyCharacter* const PlayerCharacter = (AHSProxyCharacter*)GetPawn();
-    if (PlayerCharacter)
-    {
-        PlayerCharacter->SetCamreaOffset(PlayerCharacter->CameraTargetOffset + Rate*PanSpeed*FVector(10.0f, 0.0f, 0.0f));
-    }
+    IsPrimaryActive = false;
+    PrimaryDurationTime = 10.0f;
 }
 
-void AHSPlayerController::ResetCamera()
+void AHSPlayerController::OnSecondaryPressed()
 {
-    AHSProxyCharacter* const PlayerCharacter = (AHSProxyCharacter*)GetPawn();
-    if (PlayerCharacter)
-    {
-        PlayerCharacter->SetCamreaOffset(FVector(0.0f, 0.0f, 0.0f));
-    }
+
 }
 
-void AHSPlayerController::ToggleZoom()
+void AHSPlayerController::OnSecondaryReleased()
 {
-    AHSProxyCharacter* const PlayerCharacter = (AHSProxyCharacter*)GetPawn();
-    if (PlayerCharacter)
-    {
-        if (IsZoomedIn)
-        {
-            PlayerCharacter->SetCamreaHeight(2500.f);
-            IsZoomedIn = false;
-        }
-        else
-        {
-            PlayerCharacter->SetCamreaHeight(800.f);
-            ResetCamera();
-            IsZoomedIn = true;
-        }
-    }
+
 }
 
-bool AHSPlayerController::SetDestination_Validate(const FVector DestLocation)
+void AHSPlayerController::HorizontalMovementRate(float Rate)
+{
+    
+}
+
+void AHSPlayerController::VerticalMovementRate(float Rate)
+{
+
+}
+
+bool AHSPlayerController::Primary_Validate()
 {
     return true;
 }
 
-void AHSPlayerController::SetDestination_Implementation(const FVector DestLocation)
+void AHSPlayerController::Primary_Implementation()
 {
-    AHSProxyCharacter* const PlayerCharacter = (AHSProxyCharacter*)GetPawn();
-    if (PlayerCharacter)
-    {
-        float const Distance = FVector::Dist(DestLocation, PlayerCharacter->GetActorLocation());
-
-        if (Distance > 120.0f)
-        {
-            PlayerCharacter->MoveToLocation(this, DestLocation);
-        }
+    AHSPlayerCharacter* const PlayerCharacter = (AHSPlayerCharacter*)GetPawn();
+    if (PlayerCharacter) {
+        PlayerCharacter->OnFire();
     }
 }
