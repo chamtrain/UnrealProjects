@@ -8,7 +8,7 @@
 AHSProjectile::AHSProjectile(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
     ManaCost = 1.f;
-    HitDammage = 5.f;
+    HitDamage = 5.f;
 	// Use a sphere as a simple collision representation
 	CollisionComp = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
@@ -56,9 +56,8 @@ void AHSProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FV
             */
             
             FDamageEvent damageEvent;
-            OtherActor->TakeDamage(HitDammage, damageEvent, GetInstigatorController(), GetOwner());
+            OtherActor->TakeDamage(HitDamage, damageEvent, GetInstigatorController(), GetOwner());
             EventHit();
-            Destroy();
         }
 	}
 }

@@ -19,7 +19,7 @@ public:
 
     /** Top down camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-    class UHSCameraComponent* TopDownCameraComponent;
+    class UCameraComponent* TopDownCameraComponent;
 
     /** Camera boom positioning the camera above the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

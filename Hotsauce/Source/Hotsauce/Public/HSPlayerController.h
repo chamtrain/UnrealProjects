@@ -1,7 +1,6 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/PlayerController.h"
-#include "HSPlayerCharacter.h"
 #include "HSPlayerController.generated.h"
 
 UCLASS()
@@ -22,13 +21,21 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "Events")
     void OnSecondaryEvent();
 
-protected:
-    float PrimaryCycleTime;
-    float PrimaryDurationTime;
-    float SecondaryCycleTime;
-    float SecondaryDurationTime;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Active)
     bool IsPrimaryActive;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Active)
+    float PrimaryCycleTime;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Active)
+    float PrimaryDurationTime;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Active)
     bool IsSecondaryActive;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Active)
+    float SecondaryCycleTime;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Active)
+    float SecondaryDurationTime;
+
+protected:    
 	
     virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
@@ -36,17 +43,8 @@ protected:
     void OnPrimaryPressed();
     void OnPrimaryReleased();
     
-
     void OnSecondaryPressed();
     void OnSecondaryReleased();
-    
-
-    void HorizontalMovementRate(float Rate);
-    void VerticalMovementRate(float Rate);
-
-    UFUNCTION(Reliable, Server, WithValidation)
-    void Primary();
-
 };
 
 

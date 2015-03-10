@@ -1,6 +1,7 @@
 #include "Hotsauce.h"
 #include "HSGameMode.h"
 #include "HSPlayerController.h"
+#include "HSPlayerState.h"
 
 AHSGameMode::AHSGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -17,4 +18,13 @@ AHSGameMode::AHSGameMode(const FObjectInitializer& ObjectInitializer) : Super(Ob
     {
         HUDClass = PlayerHUDBPClass.Class;
     }
+
+    static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/Blueprints/BHSPlayerController"));
+    if (PlayerControllerBPClass.Class != NULL)
+    {
+        PlayerControllerClass = PlayerControllerBPClass.Class;
+    }
+
+    PlayerStateClass = AHSPlayerState::StaticClass();
+
 }

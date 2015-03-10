@@ -23,7 +23,7 @@ public:
     float ManaCost;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats)
-    float HitDammage;
+    float HitDamage;
 
 	/** called when projectile hits something */
 	UFUNCTION()

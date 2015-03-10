@@ -48,7 +48,7 @@ AHSNavMapProxyCharacter::AHSNavMapProxyCharacter(const FObjectInitializer& Objec
     CameraOffsetBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
     // Create a camera...
-    TopDownCameraComponent = ObjectInitializer.CreateDefaultSubobject<UHSCameraComponent>(this, TEXT("TopDownCamera"));
+    TopDownCameraComponent = ObjectInitializer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("TopDownCamera"));
     TopDownCameraComponent->AttachTo(CameraOffsetBoom, USpringArmComponent::SocketName);
     TopDownCameraComponent->bAbsoluteRotation = true;
     TopDownCameraComponent->RelativeRotation = FRotator(-60.0f, 0.0f, 0.0f);
